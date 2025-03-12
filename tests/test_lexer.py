@@ -7,15 +7,15 @@ class TestLexer(unittest.TestCase):
         int main() {
             // This is a comment
             if(a == b) {
-                prnt("Hello, World!");
+                print("Hello, World!");
             } else {
-                prnt('Goodbye, World!');
+                print('Goodbye, World!');
             }
             int x = 10;
             int y = 20;
             int z = x + y;
             if(x >< y && x < y || x > y) {
-                prnt("Complex condition");
+                print("Complex condition");
             }
             return;
         }
@@ -24,7 +24,7 @@ class TestLexer(unittest.TestCase):
         tokens = lexer.tokenize()
 
         expected_tokens = {
-            'keyword': ['int', 'if', 'prnt', 'else', 'prnt', 'int', 'int', 'int', 'if', 'prnt', 'return'],
+            'keyword': ['int', 'if', 'print', 'else', 'print', 'int', 'int', 'int', 'if', 'print', 'return'],
             'identifier': ['main', 'a', 'b', 'x', 'y', 'z', 'x', 'y', 'x', 'y', 'x', 'y', 'x', 'y'],
             'constant': ['10', '20'],
             'operator': ['==', '=', '=', '=', '+', '><', '&&', '<', '||', '>'],
@@ -44,9 +44,9 @@ class TestLexer(unittest.TestCase):
             int x = 10;
             int y = 20;
             int z = x + y;
-            prnt(x);
-            prnt(y);
-            prnt(z);
+            print(x);
+            print(y);
+            print(z);
             return 0;
         }
         """
@@ -54,7 +54,7 @@ class TestLexer(unittest.TestCase):
         tokens = lexer.tokenize()
 
         expected_tokens = {
-            'keyword': ['int', 'int', 'int', 'int', 'prnt', 'prnt', 'prnt', 'return'],
+            'keyword': ['int', 'int', 'int', 'int', 'print', 'print', 'print', 'return'],
             'identifier': ['main', 'x', 'y', 'z', 'x', 'y', 'x', 'y', 'z'],
             'constant': ['10', '20', '0'],
             'operator': ['=', '=', '=', '+'],
@@ -66,6 +66,35 @@ class TestLexer(unittest.TestCase):
             self.assertEqual(tokens[key], expected_tokens[key])
 
         self.assertEqual(41, lexer.token_count())
+        
+    def test_lexer_3(self):
+        lexemes = """
+        int main() {
+            int intx = 10;
+            int yint = 20;
+            int zintz = intx * yint;
+            if(intx < yint ) {
+                print("The number %d is less than %d", intx, yint);
+            }
+            return 0;
+        }
+        """
+        lexer = Lexer(lexemes)
+        tokens = lexer.tokenize()
+
+        expected_tokens = {
+            'keyword': ['int', 'int', 'int', 'int','if', 'print','return'],
+            'identifier': ['main', 'intx', 'yint', 'zintz', 'intx', 'yint', 'intx', 'yint', 'intx', 'yint'],
+            'constant': ['10', '20', '0'],
+            'operator': ['=', '=', '=', '*','<'],
+            'punctuation': ['(', ')', '{', ';', ';', ';', '(', ')','{' , '(', ',', ',',')',';', '}', ';', '}'],
+            'unknown' : []
+        }
+
+        for key in expected_tokens:
+            self.assertEqual(tokens[key], expected_tokens[key])
+
+        self.assertEqual(43, lexer.token_count())
 
 if __name__ == '__main__':
     unittest.main()

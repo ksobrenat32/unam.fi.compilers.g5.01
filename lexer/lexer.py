@@ -54,7 +54,6 @@ class Lexer:
     def __init__(self, lexemes) -> None:
         self.lexemes = lexemes
         self.tokens = defaultdict(list)
-        self.reserved = {'if', 'else', 'int', 'return', 'prnt'}
 
     def tokenize(self) -> defaultdict:
         # Divide the lexemes into tokens
@@ -71,14 +70,13 @@ class Lexer:
             self.tokens['literal'].append(token)
             lexemes = lexemes.replace(token, '')
 
-        # Tokenize keywords
-        for token in re.findall(r'if|else|prnt|int|return', lexemes):
-            self.tokens['keyword'].append(token)
-            lexemes = lexemes.replace(token, '')
-
         # Tokenize identifiers
         for token in re.findall(r'[a-zA-Z][a-zA-Z0-9]*', lexemes):
-            self.tokens['identifier'].append(token)
+            reserved = ['if', 'else', 'print', 'int', 'return']
+            if token in reserved:
+                self.tokens['keyword'].append(token)
+            else:
+                self.tokens['identifier'].append(token)
             lexemes = lexemes.replace(token, '')
 
         # Tokenize constants
