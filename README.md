@@ -114,7 +114,7 @@ Internally, the re library implements a finite state machine, this assure the co
 
 For the implementation, at first we thought of removing all comments from the source code, this was for not dealing with them during the token identification, also to have a hierarchical structure while reading and extracting tokens. Then, we extracted the literals because this could also cause problems with the later token's identification.
 
-After that, we started with the identifier section. For this, we compared the reserved keywords list so it doesn't match and have conflicts with keywords, such as return, int, etc. Then, we started with the constants, operators, and punctuation identification. This part was less conflictive in code unlike the constants and identifiers which we had match problems with the keywords, that's bec .
+After that, we started with the identifier section. For this, we compared the reserved keywords list so it doesn't match and have conflicts with keywords, such as return, int, etc. Then, we started with the constants, operators, and punctuation identification. This part was less conflictive in code unlike the constants and identifiers which we had match problems with the keywords, that's because there existed some coincidences but after noticing that the order matters we could fix it.
 
 Finally, the unknown tokens where considered as the rest of the non-alphanumeric characters, excluding spaces and new lines.
 
