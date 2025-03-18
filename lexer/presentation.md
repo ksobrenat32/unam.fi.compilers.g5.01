@@ -24,6 +24,7 @@ In order to design and implement a lexical analyzer we should be able to identif
 
 ![Block diagram](./presentation_img/block_diag.png)
 
+
 # Implementation logic
 
 Based on the rules previously defined for the lexer we decided to classify the tokens in the following categories:
@@ -35,6 +36,31 @@ Based on the rules previously defined for the lexer we decided to classify the t
 - **Punctuation**: Symbols that are used to separate or group expressions.
 - **Literals**: A sequence of characters that represent a value.
 - **Comments**: A sequence of characters that are not interpreted by the compiler.
+
+
+# Technologies
+
+For this project we used the following libraries:
+
+- re
+- unittest
+- streamlit
+- colecctions
+
+
+# Main functions
+
+The most important usde library is the re library which allow us to design patterns using regular expression and also search those patterns in a string.
+
+- .sub(): This function is for replacing the matches in a string of a given pattern with an specific string
+- .findall(): This function returns a list of strings of all the matched patterns inside a string
+- .replace(): Replaces all the matched string with anote string.
+
+# Internal work re
+
+This library works with patterns using a finite state machine, ensuring an liner complex time for the search, which is an optimal complexityl. 
+
+For the work, the sre_parser.py file tokenizes all the regular expression, expanding all the special characters, sequences and symbols into a sre (simple regular expression).Then the sre_compile.py turns this sre expressions into bytecode and finally the _sre.c file implements the machine.
 
 # Order matters
 
