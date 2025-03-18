@@ -56,3 +56,35 @@ To maintain the code clean we decided to use OOP, so we created a class for the 
 
 - `tokenize`: To classify the tokens. It returns a dictionary with the tokens of the input.
 - `token_count`: To count the total amount of tokens. It returns the total amount of tokens.
+
+# Implementation APP
+
+The implementation will be divided into the following steps:
+
+1. Read the input string
+2. Tokenize the input
+3. Classify the tokens
+4. Print the total amount of tokens
+
+# Brief Example for the lexical analyzer
+
+        int main() {
+            // This is a comment
+            if(a == b) {
+                print("Hello, World!");
+            } else {
+                print('Goodbye, World!');
+            }
+            int x = 10;
+            int y = 20;
+            int z = x + y;
+            if(x >< y && x < y || x > y) {
+                print("Complex condition");
+            }
+            return;
+        }
+# Results and Conclusions
+
+- Our simple implementation clarifies lexical analysis in a compiler, making it ideal for lightweight and efficient use. The code is easy to understand and maintain, and it can be easily adapted to other programming languages.
+
+- For now, the project is still in the testing phase, as work is underway on other phases to create a more comprehensive compiler. We are confident that our implementation will be successful and that it will be a valuable tool for future projects.
