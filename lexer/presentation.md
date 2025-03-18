@@ -58,7 +58,7 @@ The most important usde library is the re library which allow us to design patte
 
 # Internal work re
 
-This library works with patterns using a finite state machine, ensuring an liner complex time for the search, which is an optimal complexityl. 
+This library works with patterns using a finite state machine, ensuring an liner complex time for the search, which is an optimal complexity.
 
 For the work, the sre_parser.py file tokenizes all the regular expression, expanding all the special characters, sequences and symbols into a sre (simple regular expression).Then the sre_compile.py turns this sre expressions into bytecode and finally the _sre.c file implements the machine.
 
@@ -94,21 +94,24 @@ The implementation will be divided into the following steps:
 
 # Brief Example for the lexical analyzer
 
-        int main() {
-            // This is a comment
-            if(a == b) {
-                print("Hello, World!");
-            } else {
-                print('Goodbye, World!');
-            }
-            int x = 10;
-            int y = 20;
-            int z = x + y;
-            if(x >< y && x < y || x > y) {
-                print("Complex condition");
-            }
-            return;
-        }
+```C
+int main() {
+    // This is a comment
+    if(a == b) {
+        print("Hello, World!");
+    } else {
+        print('Goodbye, World!');
+    }
+    int x = 10;
+    int y = 20;
+    int z = x + y;
+    if(x >< y && x < y || x > y) {
+        print("Complex condition");
+    }
+    return;
+}
+```
+
 # Results and Conclusions
 
 - Our simple implementation clarifies lexical analysis in a compiler, making it ideal for lightweight and efficient use. The code is easy to understand and maintain, and it can be easily adapted to other programming languages.
