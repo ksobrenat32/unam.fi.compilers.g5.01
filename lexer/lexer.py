@@ -14,7 +14,7 @@
 # 4: /
 # 5: =
 # 6: ==
-# 7: ><
+# 7: !=
 # 8: <
 # 9: >
 # 10: <=
@@ -26,7 +26,7 @@
 # 1: [0-9]+
 
 # Identifiers:
-# 1: [a-zA-Z][a-zA-Z0-9]*
+# 1: [a-zA-Z_][a-zA-Z0-9_]*
 
 # Punctuation:
 # 1: (
@@ -44,63 +44,76 @@
 # 2: '.*'
 
 import re
-from collections import defaultdict
-
 class Lexer:
-    lexemes = ""
-    tokens = defaultdict(list)
-    reserved = {}
+    def __init__(self, source_code: str) -> None:
+        self.source_code = source_code
+        self.tokens_list: list[tuple[str, str]] | None = None
 
-    def __init__(self, lexemes) -> None:
-        self.lexemes = lexemes
-        self.tokens = defaultdict(list)
+    def tokenize(self) -> list[tuple[str, str]]:
+        token_specification = [
+            ('COMMENT',      r'//[^\n]*'), # Comments
+            ('LITERAL',      r'"[^"]*"|\'[^\']*\''), # String literals (e.g., "abc", 'xyz')
+            ('KEYWORD',      r'\b(if|else|print|int|return)\b'), # Keywords
+            ('IDENTIFIER',   r'[a-zA-Z_][a-zA-Z0-9_]*'), # Identifiers (e.g., var_name, myFunction)
+            ('CONSTANT',     r'[0-9]+'), # Integer constants (e.g., 123, 0)
+            ('OPERATOR',     r'==|!=|<=|>=|&&|\|\||[-+*/=<>]'), # Operators
+            ('PUNCTUATION',  r'[;{},()]'), # Punctuation
+            ('WHITESPACE',   r'\s+'), # Whitespace
+            ('MISMATCH',     r'.') # Any other character (error token)
+        ]
+        # Combine all regex patterns into one, using named capture groups
+        tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
 
-    def tokenize(self) -> defaultdict:
-        # Divide the lexemes into tokens
-        tokens = []
+        self.tokens_list = []
 
-        # Remove comments
-        lexemes = re.sub(r'//.*', '', self.lexemes)
+        for mo in re.finditer(tok_regex, self.source_code):
+            kind = mo.lastgroup
+            value = mo.group()
 
-        # Tokenize literals
-        for token in re.findall(r'".*"', lexemes):
-            self.tokens['literal'].append(token)
-            lexemes = lexemes.replace(token, '')
-        for token in re.findall(r"'.*'", lexemes):
-            self.tokens['literal'].append(token)
-            lexemes = lexemes.replace(token, '')
-
-        # Tokenize identifiers
-        for token in re.findall(r'[a-zA-Z][a-zA-Z0-9]*', lexemes):
-            reserved = ['if', 'else', 'print', 'int', 'return']
-            if token in reserved:
-                self.tokens['keyword'].append(token)
-            else:
-                self.tokens['identifier'].append(token)
-            lexemes = lexemes.replace(token, '')
-
-        # Tokenize constants
-        for token in re.findall(r'-?[0-9]+', lexemes):
-            self.tokens['constant'].append(token)
-            lexemes = lexemes.replace(token, '')
-
-        # Tokenize operators
-        for token in re.findall(r'==|><|<=|>=|[-+*/=<>]|&&|\|\|', lexemes):
-            self.tokens['operator'].append(token)
-            lexemes = lexemes.replace(token, '')
-
-        # Tokenize punctuation
-        for token in re.findall(r'[;{},()]', lexemes):
-            self.tokens['punctuation'].append(token)
-            lexemes = lexemes.replace(token, '')
-
-        # Tokenize the rest
-        for token in re.findall(r'[^a-zA-Z0-9]', lexemes):
-            if token == ' ' or token == '\n':
+            if kind == 'COMMENT' or kind == 'WHITESPACE':
+                # Skip comments and whitespace
                 continue
-            self.tokens['unknown'].append(token)
 
-        return self.tokens
+            token_value = value
+            if kind == 'LITERAL':
+                # For string literals, remove the surrounding quotes
+                token_value = value[1:-1]
+
+            if kind == 'MISMATCH':
+                # Handle unexpected characters
+                self.tokens_list.append(('unknown', token_value))
+            else:
+                # For all other valid tokens, store as (lowercase_type, value)
+                self.tokens_list.append((kind.lower(), token_value))
+
+        return self.tokens_list
 
     def token_count(self) -> int:
-        return sum(len(self.tokens[key]) for key in self.tokens)
+        if self.tokens_list is None:
+            # If tokenize() hasn't been called, there are no tokens
+            return 0
+        return len(self.tokens_list)
+
+
+# Usage from a file:
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) < 2:
+        print("Usage: python lexer.py <source_file>")
+        sys.exit(1)
+
+    source_file = sys.argv[1]
+
+    try:
+        with open(source_file, 'r') as file:
+            source_code = file.read()
+        lexer = Lexer(source_code)
+        tokens = lexer.tokenize()
+        for token in tokens:
+            print(token)
+        print(f"Total tokens: {lexer.token_count()}")
+    except FileNotFoundError:
+        print(f"Error: File '{source_file}' not found.")
+        sys.exit(1)
+

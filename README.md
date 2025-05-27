@@ -14,14 +14,17 @@ We are group 5, team 01.
 Here are the links for each project README.md
 
 - [Lexer](./lexer/README.md)
+- [Parser](./parser/README.md)
 
 #### How to run
 
 Once you have installed the required libraries and cloned the repository, you can run the application using the following command:
 
 ```bash
-$ PYTHONPATH=. streamlit run app/streamlit_app.py
+$ python compiler.py <source_file> <output_file>
 ```
+
+Where `<source_file>` is the path to the source file you want to compile and `<output_file>` is the path where you want to save the compiled output.
 
 ## Tests
 

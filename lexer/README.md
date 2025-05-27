@@ -3,7 +3,7 @@
 ### Problem Formulation
 
 In this project we need to design and implement a lexical analyzer as the first step of building a whole compiler.
-The lexical analyzer must separate all file in a stream of tokens. Each token most follow a grammatical rule depending on his type, so first the lex has to identify the type of tokens and then save it for the program output. For this project we design our lex for the C language.
+The lexical analyzer must separate all file in a stream of tokens. Each token most follow a grammatical rule depending on his type, so first the lexer has to identify the type of tokens and then save it for the program output. For this project we design our lexer for a simple programming language based on C, which has a limited set of keywords, operators, constants, identifiers, literals and punctuation.
 
 ### Motivation
 
@@ -13,30 +13,24 @@ The tokens produced by the lexical analyzer essentially are the building blocks 
 
 Classify each token in the following categories:
 
-<ul>
-    <li>Keyword</li>
-    <li>Identifier</li>
-    <li>Operator</li>
-    <li>Constant</li>
-    <li>Literal</li>
-    <li>Sign punctuation</li>
-</ul>
+- Keyword
+- Identifier
+- Operator
+- Constant
+- Literal
+- Sign punctuation
+
 The program output must show:
-<ul>
-    <li>Number of tokens</li>
-    <li>Each identified token with his classification</li>
-</ul>
+
+- Number of tokens
+- Each identified token with his classification
 
 ## Technologies
 
 We used Python as the main programming language for this project. We also used the following libraries:
 
-<ul>
-    <li>re</li>
-    <li>unittest</li>
-    <li>streamlit</li>
-    <li>collections</li>
-</ul>
+- re
+- unittest
 
 ## Theoretical Framework
 
@@ -44,15 +38,10 @@ A **lexeme** is a sequence of characters in the source program that matches the 
 
 For making the tokenization with essentially used the **re** library which gives the class re for designing regular expressions and then searching patterns in a text that fulfill those rules.
 
-Essentially, we use some methods form **re** library for the tokenization process, such as:
+We concatenate all the regular expressions for each type of token in a single regex, so we can use it to search all the tokens in the source code at once. This is done by using the `|` operator to separate each regular expression.
 
-- .sub(): the functionality we give to this method is to substitute a pattern in a string with another string.
+We use `re.finditer()` to find all the matches of the regular expression in the source code. This method returns an iterator that yields match objects for each match found. We then iterate over the match objects and extract the token type and value from each match.
 
-- .findall(): this method returns all the matches of a pattern in a string, returning a list of strings.
-
-- .replace(): this method replaces a string with another.
-
-Internally, the re library implements a finite state machine, this assure the complex time of the search is linear and efficient. Also for doing this, first the regex defined expression are tokenize by the sre_parser.py file. This produces sre(simple regular expression), which are re expressions without special characters, sequences and symbols. Then the sre_compile.py turns this sre into bytecode and finally the _sre.c file makes the work for the machine.
 
 ## Development
 
@@ -74,7 +63,7 @@ Internally, the re library implements a finite state machine, this assure the co
 - /
 - =
 - ==
-- \>\<
+- !=
 - <
 - \>
 - <=
@@ -88,7 +77,7 @@ Internally, the re library implements a finite state machine, this assure the co
 
 #### Identifiers:
 
-- [a-zA-Z][a-zA-Z0-9]*
+- [a-zA-Z][a-zA-Z0-9_]*
 
 #### Punctuation:
 
@@ -110,54 +99,22 @@ Internally, the re library implements a finite state machine, this assure the co
 
 ### Implementation
 
-#### Backend
+The implementation of the lexical analyzer is done in the `lexer.py` file. The lexer is a class, which has a method `tokenize()` that takes a source code string as input and returns a list of tokens. The tokens are represented as a list of tuples, where each tuple contains the token type and the token value.
 
-For the implementation, at first we thought of removing all comments from the source code, this was for not dealing with them during the token identification, also to have a hierarchical structure while reading and extracting tokens. Then, we extracted the literals because this could also cause problems with the later token's identification.
+The `tokenize()` method uses the `re` library to find all the matches of the regular expression in the source code. It iterates over the match objects and extracts the token type and value from each match. The tokens are then added to a list, which is returned at the end of the method.
 
-After that, we started with the identifier section. For this, we compared the reserved keywords list so it doesn't match and have conflicts with keywords, such as return, int, etc. Then, we started with the constants, operators, and punctuation identification. This part was less conflictive in code unlike the constants and identifiers which we had match problems with the keywords, that's because there existed some coincidences but after noticing that the order matters we could fix it.
+The lexer class also has a method `get_token_count()` that returns the number of tokens found in the source code. This method simply returns the length of the list of tokens.
 
-Finally, the unknown tokens where considered as the rest of the non-alphanumeric characters, excluding spaces and new lines.
+## Usage
 
-#### Frontend
-
-We adapted the project for a web application using streamlit library. We created a simple interface where the user can upload a string input and see the output from the lexical analyzer. Here is an example of the interface:
-
-![Example of the interface](assets/example1.png)
-
-#### How to run
-
-Once you have installed the required libraries and cloned the repository, you can run the application using the following command:
+You can run the lexer using the following command:
 
 ```bash
-$ PYTHONPATH=. streamlit run app/streamlit_app.py
+$ python lexer.py <source_file>
 ```
 
-## Results
+Where `<source_file>` is the path to the source file you want to analyze.
+The lexer will output the number of tokens found and a list of tokens with their classification.
 
-As result we can say that the lexical analyzer works as expected. We have a series of test cases to show the behavior of the program. To run the tests, you can use the following command:
-
-```bash
-$ python -m unittest discover -s tests
-```
-### Expected Output
-
-This is an example of the expected output of the tests
-
-```bash
-...
---------------------------------------------------------------------
-Ran 3 tests in 0.001s
-
-OK
-```
-Also there is an example of the output of the web application showing the tokens of the input string classified by it's type and the total number of tokens.
-
-![Example of the output](assets/example2.png)
-
-## Conclusions
-
-We think the lexical analyzer is a fundamental part in a compiler, as it is the easiest part to implement, but a correct implementation is essential to avoid problems in the next steps of the compilation process. We do consider all the requirements of the project were met, with some minor issues that were solved during the development, this proves is not as trivial as it seems.
-
-## References
-- Streamlit. (n.d.). Streamlit documentation [Online]. Available: https://docs.streamlit.io/
+> We have implemented unit tests for the lexer in the `tests` directory. The tests cover the following cases:
 
