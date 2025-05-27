@@ -5,7 +5,7 @@
 # 1: else
 # 3: int
 # 4: return
-# 5: prnt
+# 5: print
 
 # Operators:
 # 1: +
