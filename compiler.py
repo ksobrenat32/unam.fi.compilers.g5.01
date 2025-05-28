@@ -1,4 +1,5 @@
 import lexer.lexer as lexer
+import parser.parser as parser
 
 if __name__ == "__main__":
     import sys
@@ -21,6 +22,14 @@ if __name__ == "__main__":
         print("Tokens:")
         for token in tokens:
             print(token)
+
+        # Parse the tokens
+        parser_instance = parser.Parser(tokens)
+        ast = parser_instance.parse_program()
+
+        # Print the AST
+        print("\nAbstract Syntax Tree (AST):")
+        parser.print_ast(ast)
 
     except FileNotFoundError:
         print(f"Error: File '{source_file}' not found.")
