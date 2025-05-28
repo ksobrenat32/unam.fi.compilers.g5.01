@@ -18,7 +18,7 @@ class FunctionNode(ASTNode):
 
 class BlockNode(ASTNode):
     def __init__(self, statements):
-        self.statements = statements # List of DeclarationNode, AssignmentNode, ConditionalNode, PrintNode
+        self.statements = statements # List of DeclarationNode, AssignmentNode, ConditionalNode, PrintNode, FunctionCallNode
 
 class DeclarationNode(ASTNode):
     def __init__(self, type_name, name, expression=None):
@@ -40,6 +40,10 @@ class ConditionalNode(ASTNode):
 class PrintNode(ASTNode):
     def __init__(self, expression):
         self.expression = expression # ExpressionNode (can be IdentifierNode or LiteralNode)
+
+class FunctionCallNode(ASTNode):
+    def __init__(self, name):
+        self.name = name # str (identifier)
 
 # Expression Node Types
 class IdentifierNode(ASTNode):
@@ -140,7 +144,7 @@ class Parser:
         return type_val
 
     def parse_block(self) -> BlockNode:
-        """<block> ::= { <declaration> | <statement> | <conditional> | <print_statement> }* """
+        """<block> ::= { <declaration> | <statement> | <conditional> | <print_statement> | <function_call> }* """
         statements = []
         # A block continues until 'return' (for function body) or '}' (for if/else body)
         while (self.current_token is not None and
@@ -150,12 +154,16 @@ class Parser:
             token_kind, token_value = self.current_token
             if token_kind == 'keyword' and token_value == 'int':
                 statements.append(self.parse_declaration())
-            elif token_kind == 'identifier':
-                statements.append(self.parse_statement())
             elif token_kind == 'keyword' and token_value == 'if':
                 statements.append(self.parse_conditional())
             elif token_kind == 'keyword' and token_value == 'print':
                 statements.append(self.parse_print_statement())
+            elif token_kind == 'identifier':
+                # Look ahead to distinguish between assignment and function call
+                if self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1] == ('punctuation', '('):
+                    statements.append(self.parse_function_call())
+                else:
+                    statements.append(self.parse_statement())
             else:
                 raise SyntaxError(self._UNEXPECTED_TOKEN_IN_BLOCK.format(token_value, token_kind, self.pos))
         return BlockNode(statements)
@@ -220,6 +228,14 @@ class Parser:
         self.consume('punctuation', ')')
         self.consume('punctuation', ';')
         return PrintNode(expression)
+
+    def parse_function_call(self) -> FunctionCallNode:
+        """<function_call> ::= <identifier> \'(\' \')\' \';\'"""
+        _, identifier_name = self.consume('identifier')
+        self.consume('punctuation', '(')
+        self.consume('punctuation', ')')
+        self.consume('punctuation', ';')
+        return FunctionCallNode(identifier_name)
 
     def parse_simple_expression(self) -> ASTNode:
         """Parses the most basic elements of an expression: identifiers or constants.
@@ -296,6 +312,8 @@ def print_ast(node, indent=0):
     elif isinstance(node, PrintNode):
         print(f"{prefix}PrintNode:")
         print_ast(node.expression, indent + 1)
+    elif isinstance(node, FunctionCallNode):
+        print(f"{prefix}FunctionCallNode: name={node.name}")
     elif isinstance(node, IdentifierNode):
         print(f"{prefix}IdentifierNode: {node.name}")
     elif isinstance(node, ConstantNode):

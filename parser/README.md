@@ -46,7 +46,8 @@ The context-free grammar (CFG) for our C based programming language is defined a
 <grammar>
     <program> ::= <function> | <program> <function>
     <function> ::= <type> <identifier> '(' ')' '{' <block> 'return' <expression> ';' '}'
-    <block> ::= <declaration> | <block> <declaration> | <statement> | <block> <statement> | <conditional> | <block> <conditional> | <print_statement> | <block> <print_statement>
+    <block> ::= <declaration> | <block> <declaration> | <statement> | <block> <statement> | <conditional> | <block> <conditional> | <print_statement> | <block> <print_statement> | <function_call> | <block> <function_call>
+    <function_call> ::= <identifier> '(' ')' ';'
     <declaration> ::= <type> <identifier> ';' | <type> <identifier> '=' <expression> ';'
     <expression> ::= <identifier> | <constant> | <expression> <operator> <expression>
     <conditional> ::= 'if' '(' <expression> ')' '{' <block> '}' | 'if' '(' <expression> ')' '{' <block> '}' 'else' '{' <block> '}'

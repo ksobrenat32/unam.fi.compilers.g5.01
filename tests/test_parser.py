@@ -3,7 +3,7 @@ from lexer.lexer import Lexer
 from parser.parser import (
     Parser, ProgramNode, FunctionNode, BlockNode, DeclarationNode,
     AssignmentNode, ConditionalNode, PrintNode, IdentifierNode,
-    ConstantNode, LiteralNode, BinaryOpNode
+    ConstantNode, LiteralNode, BinaryOpNode, FunctionCallNode
 )
 
 class TestParser(unittest.TestCase):
@@ -40,6 +40,8 @@ class TestParser(unittest.TestCase):
                 self.assertASTEqual(node1.else_block, node2.else_block, f"ConditionalNode: Else blocks differ. {msg or ''}")
         elif isinstance(node1, PrintNode):
             self.assertASTEqual(node1.expression, node2.expression, f"PrintNode: Expressions differ. {msg or ''}")
+        elif isinstance(node1, FunctionCallNode):
+            self.assertEqual(node1.name, node2.name, f"FunctionCallNode: Names differ. {msg or ''}")
         elif isinstance(node1, IdentifierNode):
             self.assertEqual(node1.name, node2.name, f"IdentifierNode: Names differ. {msg or ''}")
         elif isinstance(node1, ConstantNode):
@@ -291,6 +293,41 @@ class TestParser(unittest.TestCase):
                         )
                     ]),
                     return_expression=IdentifierNode(name='y')
+                )
+            ]
+        )
+        self.assertASTEqual(ast, expected_ast)
+
+    def test_function_with_function_call(self):
+        code = """
+        int anotherFunc() {
+            return 0;
+        }
+        int main() {
+            anotherFunc();
+            return 1;
+        }
+        """
+        lexer = Lexer(code)
+        tokens = lexer.tokenize()
+        parser = Parser(tokens)
+        ast = parser.parse_program()
+
+        expected_ast = ProgramNode(
+            functions=[
+                FunctionNode(
+                    type_name='int',
+                    name='anotherFunc',
+                    block=BlockNode(statements=[]),
+                    return_expression=ConstantNode(value='0')
+                ),
+                FunctionNode(
+                    type_name='int',
+                    name='main',
+                    block=BlockNode(statements=[
+                        FunctionCallNode(name='anotherFunc')
+                    ]),
+                    return_expression=ConstantNode(value='1')
                 )
             ]
         )
