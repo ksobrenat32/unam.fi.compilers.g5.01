@@ -23,7 +23,7 @@
 # 13: ||
 
 # Constants:
-# 1: [0-9]+
+# 1: -?[0-9]+
 
 # Identifiers:
 # 1: [a-zA-Z_][a-zA-Z0-9_]*
@@ -55,7 +55,7 @@ class Lexer:
             ('LITERAL',      r'"[^"]*"|\'[^\']*\''), # String literals (e.g., "abc", 'xyz')
             ('KEYWORD',      r'\b(if|else|print|int|return)\b'), # Keywords
             ('IDENTIFIER',   r'[a-zA-Z_][a-zA-Z0-9_]*'), # Identifiers (e.g., var_name, myFunction)
-            ('CONSTANT',     r'[0-9]+'), # Integer constants (e.g., 123, 0)
+            ('CONSTANT',     r'-?[0-9]+'), # Integer constants (e.g., 123, 0, -5)
             ('OPERATOR',     r'==|!=|<=|>=|&&|\|\||[-+*/=<>]'), # Operators
             ('PUNCTUATION',  r'[;{},()]'), # Punctuation
             ('WHITESPACE',   r'\s+'), # Whitespace
@@ -93,27 +93,3 @@ class Lexer:
             # If tokenize() hasn't been called, there are no tokens
             return 0
         return len(self.tokens_list)
-
-
-# Usage from a file:
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) < 2:
-        print("Usage: python lexer.py <source_file>")
-        sys.exit(1)
-
-    source_file = sys.argv[1]
-
-    try:
-        with open(source_file, 'r') as file:
-            source_code = file.read()
-        lexer = Lexer(source_code)
-        tokens = lexer.tokenize()
-        for token in tokens:
-            print(token)
-        print(f"Total tokens: {lexer.token_count()}")
-    except FileNotFoundError:
-        print(f"Error: File '{source_file}' not found.")
-        sys.exit(1)
-
