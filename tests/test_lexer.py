@@ -17,7 +17,7 @@ class TestLexer(unittest.TestCase):
             if(x != y && x < y || x > y) {
                 print("Complex condition");
             }
-            return;
+            return 0;
         }
         """
         lexer = Lexer(lexemes)
@@ -89,12 +89,13 @@ class TestLexer(unittest.TestCase):
             ('punctuation', ';'),
             ('punctuation', '}'),
             ('keyword', 'return'),
+            ('constant', '0'),
             ('punctuation', ';'),
             ('punctuation', '}')
         ]
 
         self.assertEqual(tokens, expected_tokens)
-        self.assertEqual(67, lexer.token_count())
+        self.assertEqual(68, lexer.token_count())
 
     def test_lexer_2(self):
         lexemes = """
