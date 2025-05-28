@@ -23,7 +23,7 @@
 # 13: ||
 
 # Constants:
-# 1: [0-9]+
+# 1: -?[0-9]+
 
 # Identifiers:
 # 1: [a-zA-Z_][a-zA-Z0-9_]*
@@ -55,7 +55,7 @@ class Lexer:
             ('LITERAL',      r'"[^"]*"|\'[^\']*\''), # String literals (e.g., "abc", 'xyz')
             ('KEYWORD',      r'\b(if|else|print|int|return)\b'), # Keywords
             ('IDENTIFIER',   r'[a-zA-Z_][a-zA-Z0-9_]*'), # Identifiers (e.g., var_name, myFunction)
-            ('CONSTANT',     r'[0-9]+'), # Integer constants (e.g., 123, 0)
+            ('CONSTANT',     r'-?[0-9]+'), # Integer constants (e.g., 123, 0, -5)
             ('OPERATOR',     r'==|!=|<=|>=|&&|\|\||[-+*/=<>]'), # Operators
             ('PUNCTUATION',  r'[;{},()]'), # Punctuation
             ('WHITESPACE',   r'\s+'), # Whitespace
