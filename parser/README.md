@@ -46,16 +46,19 @@ The context-free grammar (CFG) for our C based programming language is defined a
 <grammar>
     <program> ::= <function> | <program> <function>
     <function> ::= <type> <identifier> '(' ')' '{' <block> 'return' <expression> ';' '}'
-    <block> ::= <declaration> | <block> <declaration> | <statement> | <block> <statement> | <conditional> | <block> <conditional>
+    <block> ::= <declaration> | <block> <declaration> | <statement> | <block> <statement> | <conditional> | <block> <conditional> | <print_statement> | <block> <print_statement>
     <declaration> ::= <type> <identifier> ';' | <type> <identifier> '=' <expression> ';'
     <expression> ::= <identifier> | <constant> | <expression> <operator> <expression>
     <conditional> ::= 'if' '(' <expression> ')' '{' <block> '}' | 'if' '(' <expression> ')' '{' <block> '}' 'else' '{' <block> '}'
     <statement> ::= <identifier> '=' <expression> ';'
+    <print_statement> ::= 'print' '(' <literal> ')' ';' | 'print' '(' <identifier> ')' ';'
     <identifier> ::= <letter> | <letter> <name>
     <name> :: = <letter> | <digit> | <letter> <name> | <digit> <name>
     <type> ::= 'int'
     <constant> ::= <digit>
-    <operator> ::= '+' | '-' | '*' | '/' | '==' | '><' | '<' | '>' | '<=' | '>=' | '&&' | '||'
+    <literal> ::= '"' <string_char>* '"' | "'" <string_char>* "'"
+    <string_char> ::= <letter> | <digit> | ' ' | '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')' | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';' | '<' | '=' | '>' | '?' | '@' | '[' | '\\' | ']' | '^' | '_' | '`' | '{' | '|' | '}' | '~'
+    <operator> ::= '+' | '-' | '*' | '/' | '==' | '!=' | '<' | '>' | '<=' | '>=' | '&&' | '||'
     <letter> ::= 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
     <digit> ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | <digit> <digit>
 </grammar>
