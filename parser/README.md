@@ -83,5 +83,5 @@ The parser has been successfully implemented and tested against a set of predefi
 
 ## References
 
-- S. GeeksforGeeks, "Types of Parsers in Compiler Design," [Online]. Available: https://www.geeksforgeeks.org/types-of-parsers-in-compiler-design/. [Accessed: 10-Jun-2024].
-- S. GeeksforGeeks, "Problem on LR(0) Parser," [Online]. Available: https://www.geeksforgeeks.org/problem-on-lr0-parser/. [Accessed: 10-Jun-2024].
+- S. GeeksforGeeks, "Types of Parsers in Compiler Design," [Online]. Available: https://www.geeksforgeeks.org/types-of-parsers-in-compiler-design/. [Accessed: 27-May-2025].
+- S. GeeksforGeeks, "Problem on LR(0) Parser," [Online]. Available: https://www.geeksforgeeks.org/problem-on-lr0-parser/. [Accessed: 27-May-2025].
