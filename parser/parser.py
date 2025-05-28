@@ -62,6 +62,18 @@ class BinaryOpNode(ASTNode):
 
 # --- Parser Class ---
 class Parser:
+    # Error Message Templates
+    _UNEXPECTED_EOF_EXPECTED_TYPE_VALUE = "Unexpected end of input. Expected {} with value {}."
+    _UNEXPECTED_EOF_EXPECTED_TYPE = "Unexpected end of input. Expected {}."
+    _UNEXPECTED_TOKEN_TYPE = "Expected token type {} but got {} value {}. {}."
+    _UNEXPECTED_TOKEN_VALUE = "Expected value {} for token type {} but got {}. {}."
+    _PROGRAM_MIN_ONE_FUNCTION = "A program must contain at least one function."
+    _UNEXPECTED_TOKEN_IN_BLOCK = "Unexpected token {} type {} in block at position {}."
+    _UNEXPECTED_EOF_AFTER_PRINT = "Unexpected end of input after print at position {}."
+    _EXPECTED_LITERAL_OR_IDENTIFIER_PRINT = "Expected literal or identifier for print argument got {} value {} at position {}."
+    _UNEXPECTED_EOF_EXPECTED_EXPRESSION = "Unexpected end of input expected expression at position {}."
+    _EXPECTED_IDENTIFIER_OR_CONSTANT_EXPRESSION = "Expected identifier or constant for expression got {} value {} at position {}."
+
     def __init__(self, tokens: list[tuple[str, str]]):
         self.tokens = tokens
         self.pos = 0
@@ -78,29 +90,31 @@ class Parser:
     def consume(self, expected_type: str, expected_value: str | None = None) -> tuple[str, str]:
         """Consume the current token if it matches expectations, or raise SyntaxError."""
         token = self.current_token
+        current_pos_info = f"at position {self.pos}" if self.pos < len(self.tokens) else "at end of input"
+
         if token is None:
-            err_msg = f"Unexpected end of input. Expected {expected_type}"
             if expected_value:
-                err_msg += f" with value \'{expected_value}\'"
-            raise SyntaxError(err_msg)
+                raise SyntaxError(self._UNEXPECTED_EOF_EXPECTED_TYPE_VALUE.format(expected_type, expected_value))
+            else:
+                raise SyntaxError(self._UNEXPECTED_EOF_EXPECTED_TYPE.format(expected_type))
 
         token_kind, token_value = token
         if token_kind != expected_type:
-            raise SyntaxError(f"Expected token type \'{expected_type}\' but got \'{token_kind}\' (value: \'{token_value}\') at position {self.pos}")
+            raise SyntaxError(self._UNEXPECTED_TOKEN_TYPE.format(expected_type, token_kind, token_value, current_pos_info))
         if expected_value is not None and token_value != expected_value:
-            raise SyntaxError(f"Expected token \'{expected_type}:{expected_value}\' but got \'{token_kind}:{token_value}\' at position {self.pos}")
+            raise SyntaxError(self._UNEXPECTED_TOKEN_VALUE.format(expected_value, expected_type, token_value, current_pos_info))
 
         self.advance()
-        return token_kind, token_value
+        return token
 
     def parse_program(self) -> ProgramNode:
         """<program> ::= <function>+"""
         functions = []
-        while self.current_token is not None: # Program ends when no more tokens
+        while self.current_token is not None:
             functions.append(self.parse_function())
 
         if not functions:
-            raise SyntaxError("A program must contain at least one function.")
+            raise SyntaxError(self._PROGRAM_MIN_ONE_FUNCTION)
         return ProgramNode(functions)
 
     def parse_function(self) -> FunctionNode:
@@ -133,18 +147,17 @@ class Parser:
                not (self.current_token[0] == 'keyword' and self.current_token[1] == 'return') and
                not (self.current_token[0] == 'punctuation' and self.current_token[1] == '}')):
 
-            current_kind, current_val = self.current_token
-            if current_kind == 'keyword' and current_val == 'int':  # Start of a declaration
+            token_kind, token_value = self.current_token
+            if token_kind == 'keyword' and token_value == 'int':
                 statements.append(self.parse_declaration())
-            elif current_kind == 'identifier':  # Start of an assignment statement
+            elif token_kind == 'identifier':
                 statements.append(self.parse_statement())
-            elif current_kind == 'keyword' and current_val == 'if':  # Start of a conditional
+            elif token_kind == 'keyword' and token_value == 'if':
                 statements.append(self.parse_conditional())
-            elif current_kind == 'keyword' and current_val == 'print': # Start of a print statement
+            elif token_kind == 'keyword' and token_value == 'print':
                 statements.append(self.parse_print_statement())
             else:
-                raise SyntaxError(f"Unexpected token \'{current_val}\' ({current_kind}) in block at position {self.pos}")
-
+                raise SyntaxError(self._UNEXPECTED_TOKEN_IN_BLOCK.format(token_value, token_kind, self.pos))
         return BlockNode(statements)
 
     def parse_declaration(self) -> DeclarationNode:
@@ -183,7 +196,7 @@ class Parser:
         if self.current_token and self.current_token[0] == 'keyword' and self.current_token[1] == 'else':
             self.consume('keyword', 'else')
             self.consume('punctuation', '{')
-            else_block = self.parse_block() # parse_block stops at '}'
+            else_block = self.parse_block()
             self.consume('punctuation', '}')
 
         return ConditionalNode(condition, if_block, else_block)
@@ -192,46 +205,43 @@ class Parser:
         """<print_statement> ::= 'print' \'(\' <literal> \')\' ';' | 'print' \'(\' <identifier> \')\' ';'"""
         self.consume('keyword', 'print')
         self.consume('punctuation', '(')
+        expression: ASTNode
         if self.current_token is None:
-            raise SyntaxError("Expected a literal or identifier after 'print(' at position {self.pos}")
+            raise SyntaxError(self._UNEXPECTED_EOF_AFTER_PRINT.format(self.pos))
         if self.current_token[0] == 'literal':
-            _, literal_value = self.consume('literal')
-            self.consume('punctuation', ')')
-            self.consume('punctuation', ';')
-            return PrintNode(LiteralNode(literal_value))
+            _, value = self.consume('literal')
+            expression = LiteralNode(value)
         elif self.current_token[0] == 'identifier':
-            _, identifier_name = self.consume('identifier')
-            self.consume('punctuation', ')')
-            self.consume('punctuation', ';')
-            return PrintNode(IdentifierNode(identifier_name))
+            _, name = self.consume('identifier')
+            expression = IdentifierNode(name)
         else:
-            raise SyntaxError(f"Expected a literal or identifier after 'print(' at position {self.pos}, got {self.current_token[0]}:{self.current_token[1]}")
+            tk, tv = self.current_token
+            raise SyntaxError(self._EXPECTED_LITERAL_OR_IDENTIFIER_PRINT.format(tk, tv, self.pos))
+        self.consume('punctuation', ')')
+        self.consume('punctuation', ';')
+        return PrintNode(expression)
 
     def parse_simple_expression(self) -> ASTNode:
-        """Parses the most basic elements of an expression: identifiers, constants, or literals.
-           <simple_expression> ::= <identifier> | <constant> | <literal>
+        """Parses the most basic elements of an expression: identifiers or constants.
+           <simple_expression> ::= <identifier> | <constant>
         """
         if not self.current_token:
-            raise SyntaxError(f"Unexpected end of input. Expected identifier, constant, or literal at position {self.pos}")
+            raise SyntaxError(self._UNEXPECTED_EOF_EXPECTED_EXPRESSION.format(self.pos))
 
         token_kind, token_value = self.current_token
         if token_kind == 'identifier':
-            self.advance()
+            self.consume('identifier')
             return IdentifierNode(token_value)
         elif token_kind == 'constant':
-            self.advance()
+            self.consume('constant')
             return ConstantNode(token_value)
-        elif token_kind == 'literal':
-            self.advance()
-            return LiteralNode(token_value)
         else:
-            raise SyntaxError(f"Expected identifier, constant, or literal for expression, got {token_kind}:{token_value} at position {self.pos}")
+            raise SyntaxError(self._EXPECTED_IDENTIFIER_OR_CONSTANT_EXPRESSION.format(token_kind, token_value, self.pos))
 
     def parse_expression(self) -> ASTNode:
         """<expression> ::= <simple_expression> { <operator> <simple_expression> }*
            Handles left-associative binary operations.
            Operators from CFG: '+', '-', '*', '/', '==', '!=', '<', '>', '<=', '>=', '&&', '||'
-           (Assuming '><' in CFG was a typo for '!=' as per lexer spec, or should be '!=' if lexer produces it)
         """
         node = self.parse_simple_expression()
 
@@ -240,11 +250,10 @@ class Parser:
         while (self.current_token and
                self.current_token[0] == 'operator' and
                self.current_token[1] in expression_operators):
-            op_kind, op_value = self.current_token
-            self.consume('operator', op_value) # Consume the operator
+            op_token = self.consume('operator')
+            operator = op_token[1]
             right_node = self.parse_simple_expression()
-            node = BinaryOpNode(node, op_value, right_node)
-
+            node = BinaryOpNode(left=node, operator=operator, right=right_node)
         return node
 
 # Simple AST printer
@@ -254,7 +263,8 @@ def print_ast(node, indent=0):
 
     if isinstance(node, ProgramNode):
         print(f"ProgramNode:")
-        for func in node.functions: print_ast(func, indent + 1)
+        for func in node.functions:
+            print_ast(func, indent + 1)
     elif isinstance(node, FunctionNode):
         print(f"{prefix}FunctionNode: {node.name}() -> {node.type_name}")
         print(f"{prefix}  Block:")
@@ -262,14 +272,15 @@ def print_ast(node, indent=0):
         print(f"{prefix}  Return:")
         print_ast(node.return_expression, indent + 2)
     elif isinstance(node, BlockNode):
-        print(f"{prefix}BlockNode:")
-        if not node.statements: print(f"{prefix}  (empty block)")
-        for stmt in node.statements: print_ast(stmt, indent + 1)
+        if not node.statements:
+            print(f"{prefix}  (empty)")
+        for stmt in node.statements:
+            print_ast(stmt, indent + 1)
     elif isinstance(node, DeclarationNode):
         print(f"{prefix}DeclarationNode: {node.name} ({node.type_name})")
         if node.expression:
-            print(f"{prefix}  Initial Value:")
-            print_ast(node.expression, indent + 1)
+            print(f"{prefix}  Initializer:")
+            print_ast(node.expression, indent + 2)
     elif isinstance(node, AssignmentNode):
         print(f"{prefix}AssignmentNode: {node.identifier_name} =")
         print_ast(node.expression, indent + 1)
@@ -290,7 +301,7 @@ def print_ast(node, indent=0):
     elif isinstance(node, ConstantNode):
         print(f"{prefix}ConstantNode: {node.value}")
     elif isinstance(node, LiteralNode):
-        print(f"{prefix}LiteralNode: \\\"{node.value}\\\"")
+        print(f"{prefix}LiteralNode: \"{node.value}\"")
     elif isinstance(node, BinaryOpNode):
         print(f"{prefix}BinaryOpNode: {node.operator}")
         print(f"{prefix}  Left:")
@@ -298,4 +309,4 @@ def print_ast(node, indent=0):
         print(f"{prefix}  Right:")
         print_ast(node.right, indent + 1)
     else:
-        print(f"{prefix}Unknown AST Node Type: {type(node)}")
+        print(f"{prefix}Unknown ASTNode: {type(node)}")
