@@ -270,7 +270,7 @@ class TestLexer(unittest.TestCase):
         ]
 
         self.assertEqual(tokens, expected_tokens)
-        self.assertEqual(68, lexer.token_count())
+        self.assertEqual(68, lexer.token_count())\
 
     def test_general_text_2(self):
         lexemes = """
