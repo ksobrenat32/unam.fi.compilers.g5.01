@@ -1,5 +1,6 @@
 import lexer.lexer as lexer
 import parser.parser as parser
+import semanter.semanter as semanter
 
 if __name__ == "__main__":
     import sys
@@ -30,6 +31,10 @@ if __name__ == "__main__":
         # Print the AST
         print("\nAbstract Syntax Tree (AST):")
         parser.print_ast(ast)
+
+        # Run the semantic analysis
+        semanter_instance = semanter.SemanticAnalyzer()
+        semanter_instance.analyze(ast)
 
     except FileNotFoundError:
         print(f"Error: File '{source_file}' not found.")

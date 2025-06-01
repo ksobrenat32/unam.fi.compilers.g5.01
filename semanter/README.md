@@ -41,7 +41,7 @@ We can remember that this C based programming language is a simplified version o
 
 - Only supports the 'int' type
 - Functions don't accept parameters
-- No loops (while, for) are defined
+- No loops for are defined
 - No array or pointer support
 
 The grammar of the language can be found in the `parser/README.md` file, which describes the syntax of the language. The semantic analyzer will use this grammar to validate the semantic correctness of the program.
