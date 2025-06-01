@@ -54,10 +54,6 @@ The semantic analyzer is implemented in the `semanter` directory. The main compo
 - **Visitor Pattern**: The semantic analyzer uses the visitor pattern to traverse the AST and perform semantic checks.
 - **Error Handling**: The semantic analyzer provides meaningful error messages when semantic errors are detected.
 
-## Results
-
-## Conclusions
-
 ## References
 
 - S. GeeksforGeeks, "Semantic Analysis in Compiler Design," [Online]. Available: https://www.geeksforgeeks.org/semantic-analysis-in-compiler-design/. [Accessed: 28-May-2025].
