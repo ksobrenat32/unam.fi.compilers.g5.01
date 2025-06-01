@@ -34,7 +34,7 @@ We can remember that this C based programming language is a simplified version o
 
 - Only supports the 'int' type
 - Functions don't accept parameters
-- No loops (while, for) are defined
+- No loops for are defined
 - No array or pointer support
 - No function calls in expressions
 
@@ -46,11 +46,12 @@ The context-free grammar (CFG) for our C based programming language is defined a
 <grammar>
     <program> ::= <function> | <program> <function>
     <function> ::= <type> <identifier> '(' ')' '{' <block> 'return' <expression> ';' '}'
-    <block> ::= <declaration> | <block> <declaration> | <statement> | <block> <statement> | <conditional> | <block> <conditional> | <print_statement> | <block> <print_statement> | <function_call> | <block> <function_call>
+    <block> ::= <declaration> | <block> <declaration> | <statement> | <block> <statement> | <conditional> | <block> <conditional> | <print_statement> | <block> <print_statement> | <function_call> | <block> <function_call> | <while_statement> | <block> <while_statement>
     <function_call> ::= <identifier> '(' ')' ';'
     <declaration> ::= <type> <identifier> ';' | <type> <identifier> '=' <expression> ';'
     <expression> ::= <identifier> | <constant> | <expression> <operator> <expression>
     <conditional> ::= 'if' '(' <expression> ')' '{' <block> '}' | 'if' '(' <expression> ')' '{' <block> '}' 'else' '{' <block> '}'
+    <while_statement> ::= 'while' '(' <expression> ')' '{' <block> '}'
     <statement> ::= <identifier> '=' <expression> ';'
     <print_statement> ::= 'print' '(' <literal> ')' ';' | 'print' '(' <identifier> ')' ';'
     <identifier> ::= <letter> | <letter> <name>

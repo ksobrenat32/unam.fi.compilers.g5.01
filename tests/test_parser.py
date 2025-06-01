@@ -3,7 +3,7 @@ from lexer.lexer import Lexer
 from parser.parser import (
     Parser, ProgramNode, FunctionNode, BlockNode, DeclarationNode,
     AssignmentNode, ConditionalNode, PrintNode, IdentifierNode,
-    ConstantNode, LiteralNode, BinaryOpNode, FunctionCallNode
+    ConstantNode, LiteralNode, BinaryOpNode, FunctionCallNode, WhileNode
 )
 
 class TestParser(unittest.TestCase):
@@ -38,6 +38,9 @@ class TestParser(unittest.TestCase):
             self.assertASTEqual(node1.if_block, node2.if_block, f"ConditionalNode: If blocks differ. {msg or ''}")
             if node1.else_block or node2.else_block: # Check else_block only if one of them has it
                 self.assertASTEqual(node1.else_block, node2.else_block, f"ConditionalNode: Else blocks differ. {msg or ''}")
+        elif isinstance(node1, WhileNode):
+            self.assertASTEqual(node1.condition, node2.condition, f"WhileNode: Conditions differ. {msg or ''}")
+            self.assertASTEqual(node1.block, node2.block, f"WhileNode: Blocks differ. {msg or ''}")
         elif isinstance(node1, PrintNode):
             self.assertASTEqual(node1.expression, node2.expression, f"PrintNode: Expressions differ. {msg or ''}")
         elif isinstance(node1, FunctionCallNode):
@@ -506,6 +509,80 @@ class TestParser(unittest.TestCase):
         )
         self.assertASTEqual(ast, expected_ast)
 
+    def test_simple_while_statement(self):
+        code = """
+        int main() {
+            int x = 0;
+            while (x < 5) {
+                x = x + 1;
+            }
+            return x;
+        }
+        """
+        lexer = Lexer(code)
+        tokens = lexer.tokenize()
+        parser = Parser(tokens)
+        ast = parser.parse_program()
+
+        expected_ast = ProgramNode(
+            functions=[
+                FunctionNode(
+                    type_name='int',
+                    name='main',
+                    block=BlockNode(statements=[
+                        DeclarationNode(type_name='int', name='x', expression=ConstantNode(value='0')),
+                        WhileNode(
+                            condition=BinaryOpNode(
+                                left=IdentifierNode(name='x'),
+                                operator='<',
+                                right=ConstantNode(value='5')
+                            ),
+                            block=BlockNode(statements=[
+                                AssignmentNode(
+                                    identifier_name='x',
+                                    expression=BinaryOpNode(
+                                        left=IdentifierNode(name='x'),
+                                        operator='+',
+                                        right=ConstantNode(value='1')
+                                    )
+                                )
+                            ])
+                        )
+                    ]),
+                    return_expression=IdentifierNode(name='x')
+                )
+            ]
+        )
+        self.assertASTEqual(ast, expected_ast)
+
+    def test_empty_block_in_while(self):
+        code = """
+        int main() {
+            while (0 == 1) {}
+            return 0;
+        }
+        """
+        lexer = Lexer(code)
+        tokens = lexer.tokenize()
+        parser = Parser(tokens)
+        ast = parser.parse_program()
+        expected_ast = ProgramNode(
+            functions=[
+                FunctionNode(
+                    type_name='int',
+                    name='main',
+                    block=BlockNode(statements=[
+                        WhileNode(
+                            condition=BinaryOpNode(left=ConstantNode('0'), operator='==', right=ConstantNode('1')),
+                            block=BlockNode(statements=[])
+                        )
+                    ]),
+                    return_expression=ConstantNode('0')
+                )
+            ]
+        )
+        self.assertASTEqual(ast, expected_ast)
+
     # --- SyntaxError Tests ---
 
     def test_error_missing_return_semicolon(self):
@@ -580,6 +657,38 @@ class TestParser(unittest.TestCase):
         tokens = lexer.tokenize()
         parser = Parser(tokens)
         with self.assertRaisesRegex(SyntaxError, r"Expected value \) for token type punctuation but got {. at position 10."):
+            parser.parse_program()
+
+    def test_error_while_missing_closing_paren(self):
+        code = """
+        int main() {
+            int x = 0;
+            while (x < 5 {
+                x = x + 1;
+            }
+            return 0;
+        }
+        """
+        lexer = Lexer(code)
+        tokens = lexer.tokenize()
+        parser = Parser(tokens)
+        with self.assertRaisesRegex(SyntaxError, r"Expected value \) for token type punctuation but got {. at position 15"):
+            parser.parse_program()
+
+    def test_error_while_missing_closing_brace(self):
+        code = """
+        int main() {
+            int x = 0;
+            while (x < 5) {
+                x = x + 1;
+
+            return 0;
+        }
+        """
+        lexer = Lexer(code)
+        tokens = lexer.tokenize()
+        parser = Parser(tokens)
+        with self.assertRaisesRegex(SyntaxError, r"Expected token type punctuation but got keyword value return. at position 23"):
             parser.parse_program()
 
     def test_error_print_missing_semicolon(self):
