@@ -44,6 +44,7 @@ We can remember that this C based programming language is a simplified version o
 - Functions don't accept parameters
 - No loops for are defined
 - No array or pointer support
+- Our L1 tag is the main function, so it does not appear in the IR
 
 The grammar of the language can be found in the `parser/README.md` file, which describes the syntax of the language. The semantic analyzer will use this grammar to validate the semantic correctness of the program.
 

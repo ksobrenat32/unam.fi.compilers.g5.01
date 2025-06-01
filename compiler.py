@@ -1,6 +1,7 @@
 import lexer.lexer as lexer
 import parser.parser as parser
 import semanter.semanter as semanter
+import intermediator.intermediator as intermediator
 
 if __name__ == "__main__":
     import sys
@@ -35,6 +36,15 @@ if __name__ == "__main__":
         # Run the semantic analysis
         semanter_instance = semanter.SemanticAnalyzer()
         semanter_instance.analyze(ast)
+
+        # Generate Intermediate Code
+        ir_generator = intermediator.IRGenerator()
+        ir_code = ir_generator.generate(ast)
+
+        # Print the Intermediate Code
+        print("\\nIntermediate Code:")
+        for instruction in ir_code:
+            print(instruction)
 
     except FileNotFoundError:
         print(f"Error: File '{source_file}' not found.")
