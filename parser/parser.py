@@ -37,6 +37,11 @@ class ConditionalNode(ASTNode):
         self.if_block = if_block # BlockNode
         self.else_block = else_block # Optional: BlockNode
 
+class WhileNode(ASTNode):
+    def __init__(self, condition, block):
+        self.condition = condition # ExpressionNode
+        self.block = block # BlockNode
+
 class PrintNode(ASTNode):
     def __init__(self, expression):
         self.expression = expression # ExpressionNode (can be IdentifierNode or LiteralNode)
@@ -144,9 +149,9 @@ class Parser:
         return type_val
 
     def parse_block(self) -> BlockNode:
-        """<block> ::= { <declaration> | <statement> | <conditional> | <print_statement> | <function_call> }* """
+        """<block> ::= { <declaration> | <statement> | <conditional> | <print_statement> | <function_call> | <while_statement> }* """
         statements = []
-        # A block continues until 'return' (for function body) or '}' (for if/else body)
+        # A block continues until 'return' (for function body) or '}' (for if/else/while body)
         while (self.current_token is not None and
                not (self.current_token[0] == 'keyword' and self.current_token[1] == 'return') and
                not (self.current_token[0] == 'punctuation' and self.current_token[1] == '}')):
@@ -156,6 +161,8 @@ class Parser:
                 statements.append(self.parse_declaration())
             elif token_kind == 'keyword' and token_value == 'if':
                 statements.append(self.parse_conditional())
+            elif token_kind == 'keyword' and token_value == 'while':
+                statements.append(self.parse_while_statement())
             elif token_kind == 'keyword' and token_value == 'print':
                 statements.append(self.parse_print_statement())
             elif token_kind == 'identifier':
@@ -208,6 +215,17 @@ class Parser:
             self.consume('punctuation', '}')
 
         return ConditionalNode(condition, if_block, else_block)
+
+    def parse_while_statement(self) -> WhileNode:
+        """<while_statement> ::= 'while' '(' <expression> ')' '{' <block> '}'"""
+        self.consume('keyword', 'while')
+        self.consume('punctuation', '(')
+        condition = self.parse_expression()
+        self.consume('punctuation', ')')
+        self.consume('punctuation', '{')
+        block = self.parse_block()
+        self.consume('punctuation', '}')
+        return WhileNode(condition, block)
 
     def parse_print_statement(self) -> PrintNode:
         """<print_statement> ::= 'print' \'(\' <literal> \')\' ';' | 'print' \'(\' <identifier> \')\' ';'"""
@@ -309,6 +327,12 @@ def print_ast(node, indent=0):
         if node.else_block:
             print(f"{prefix}  Else:")
             print_ast(node.else_block, indent + 1)
+    elif isinstance(node, WhileNode):
+        print(f"{prefix}WhileNode:")
+        print(f"{prefix}  Condition:")
+        print_ast(node.condition, indent + 1)
+        print(f"{prefix}  Block:")
+        print_ast(node.block, indent + 1)
     elif isinstance(node, PrintNode):
         print(f"{prefix}PrintNode:")
         print_ast(node.expression, indent + 1)

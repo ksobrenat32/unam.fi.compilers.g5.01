@@ -51,6 +51,7 @@ We use `re.finditer()` to find all the matches of the regular expression in the 
 
 - if
 - else
+- while
 - int
 - return
 - print
@@ -105,16 +106,13 @@ The `tokenize()` method uses the `re` library to find all the matches of the reg
 
 The lexer class also has a method `get_token_count()` that returns the number of tokens found in the source code. This method simply returns the length of the list of tokens.
 
-## Usage
+## Results
 
-You can run the lexer using the following command:
+As result we can say that the lexical analyzer works as expected. We have a series of test cases to show the behavior of the program. To run the tests, you can use the following command:
 
 ```bash
-$ python lexer.py <source_file>
+$ python -m unittest discover -s tests
 ```
 
-Where `<source_file>` is the path to the source file you want to analyze.
-The lexer will output the number of tokens found and a list of tokens with their classification.
-
-> We have implemented unit tests for the lexer in the `tests` directory. The tests cover the following cases:
+If the output is `OK`, then all tests have passed successfully.
 

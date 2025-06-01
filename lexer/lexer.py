@@ -6,6 +6,7 @@
 # 3: int
 # 4: return
 # 5: print
+# 6: while
 
 # Operators:
 # 1: +
@@ -53,7 +54,7 @@ class Lexer:
         token_specification = [
             ('COMMENT',      r'//[^\n]*'), # Comments
             ('LITERAL',      r'"[^"]*"|\'[^\']*\''), # String literals (e.g., "abc", 'xyz')
-            ('KEYWORD',      r'\b(if|else|print|int|return)\b'), # Keywords
+            ('KEYWORD',      r'\b(if|else|print|int|return|while)\b'), # Keywords
             ('IDENTIFIER',   r'[a-zA-Z_][a-zA-Z0-9_]*'), # Identifiers (e.g., var_name, myFunction)
             ('CONSTANT',     r'-?[0-9]+'), # Integer constants (e.g., 123, 0, -5)
             ('OPERATOR',     r'==|!=|<=|>=|&&|\|\||[-+*/=<>]'), # Operators
