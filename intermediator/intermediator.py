@@ -1,5 +1,3 @@
-# Intermediator
-
 # --- IR Node Classes ---
 class IRInstruction:
     """Base class for all IR instructions."""
@@ -169,7 +167,15 @@ class IRGenerator:
         return node.value
 
     def visit_LiteralNode(self, node):
-        return f'"{node.value}"'
+        if isinstance(node.value, str):
+            try:
+                processed_value = node.value.encode('latin-1').decode('unicode_escape')
+            except Exception as e:
+                print(f"Warning: Could not decode escapes in literal '{node.value}': {e}")
+                processed_value = node.value
+        else:
+            processed_value = str(node.value)
+        return f'"{processed_value}"'
 
     def visit_BinaryOpNode(self, node):
         left_operand = self._visit(node.left)
