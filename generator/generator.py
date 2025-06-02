@@ -11,6 +11,7 @@ class CodeGenerator:
         self.var_locations = {}
         self.current_function_name = None
         self.current_function_var_offsets = {}
+        self.defined_data_labels = set()
 
     def _get_var_location_or_value(self, var_name_or_value):
         if isinstance(var_name_or_value, int):
@@ -209,21 +210,29 @@ class CodeGenerator:
                     val = instr.value
                     s_val = str(val)
 
-                    if (s_val.startswith('"') and s_val.endswith('"')) or (s_val.startswith("'") and s_val.endswith("'")):
+                    is_string_literal = False
+                    if len(s_val) >= 2 and \
+                       ((s_val.startswith('"') and s_val.endswith('"')) or \
+                        (s_val.startswith("'") and s_val.endswith("'"))):
+                        is_string_literal = True
+                    if is_string_literal:
+                        string_literal_content = s_val[1:-1]
+                        processed_content = string_literal_content.replace('\\\\n', '\\n')
+                        encoded_bytes = processed_content.encode("utf-8")
+                        actual_length = len(encoded_bytes)
 
-                        label_name = f'str_{abs(hash(s_val))}'
+                        label_name = f'str_{abs(hash(processed_content))}'
 
-                        if label_name not in self.assembly_code_parts["data"]:
+                        if label_name not in self.defined_data_labels:
+                            byte_values = ','.join(str(b) for b in encoded_bytes)
+                            self.assembly_code_parts["data"].append(f'  {label_name} db {byte_values},0')
+                            self.defined_data_labels.add(label_name)
 
-                            string_content = s_val[1:-1]
-                            ascii_bytes = ', '.join(str(b) for b in string_content.encode("utf-8"))
-                            self.assembly_code_parts["data"].append(f'  {label_name} db {ascii_bytes},0')
                         self._add_asm(f"  mov eax, 4          ; syscall: sys_write")
                         self._add_asm(f"  mov ebx, 1          ; fd: stdout")
-                        self._add_asm(f"  mov ecx, {label_name}")
-                        self._add_asm(f"  mov edx, {len(s_val) - 2}      ; length of string")
-                        self._add_asm(f"  int 0x80")
-                        self._add_asm("  call print_newline")
+                        self._add_asm(f"  mov ecx, {label_name}   ; message address")
+                        self._add_asm(f"  mov edx, {actual_length}  ; message length")
+                        self._add_asm(f"  int 0x80            ; Call kernel")
                     else:
                         val_or_loc = self._get_var_location_or_value(val)
                         if val_or_loc.startswith("[ebp-") or val_or_loc.startswith("[ebp+"):

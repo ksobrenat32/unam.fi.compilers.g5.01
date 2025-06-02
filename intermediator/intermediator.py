@@ -1,5 +1,3 @@
-# Intermediator
-
 # --- IR Node Classes ---
 class IRInstruction:
     """Base class for all IR instructions."""
@@ -169,7 +167,26 @@ class IRGenerator:
         return node.value
 
     def visit_LiteralNode(self, node):
-        return f'"{node.value}"'
+        # node.value is the string content from the lexer/parser.
+        # We need to interpret C-style escape sequences within it.
+        # For example, if C code is "hello\\nworld", node.value (as a Python string)
+        # might be "hello\\\\nworld" (literal backslash, n). This should become "hello\\nworld" (actual newline).
+        # If C code is "hello\\\\\\\\nworld", node.value might be "hello\\\\\\\\\\\\nworld". This should become "hello\\\\nworld" (literal backslash, n).
+        if isinstance(node.value, str):
+            try:
+                # Encode to a byte string using 'latin-1' (to preserve byte values)
+                # and then use 'unicode_escape' to decode standard C/Python string escapes.
+                # This effectively processes sequences like '\\n' into actual newlines,
+                # '\\t' into tabs, '\\\\' into a single backslash, etc.
+                processed_value = node.value.encode('latin-1').decode('unicode_escape')
+            except Exception as e:
+                print(f"Warning: Could not decode escapes in literal '{node.value}': {e}")
+                processed_value = node.value # Fallback to the original value
+        else:
+            # This case should ideally not be hit if LiteralNode is only for strings from source.
+            processed_value = str(node.value)
+        
+        return f'"{processed_value}"' # Wrap the processed string in quotes for the IR
 
     def visit_BinaryOpNode(self, node):
         left_operand = self._visit(node.left)
