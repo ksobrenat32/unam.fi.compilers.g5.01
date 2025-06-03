@@ -40,11 +40,11 @@ Code generation is the process of converting the intermediate representation int
 
 We can remember that this C based programming language is a simplified version of C, the limitations are:
 
-- Only supports the 'int' type
-- Functions don't accept parameters
-- No loops for are defined
-- No array or pointer support
-- Our L1 tag is the main function, so it does not appear in the IR
+-   Only supports the 'int' type
+-   Functions don't accept parameters
+-   No loops for are defined
+-   No array or pointer support
+-   Our L1 tag is the main function, so it does not appear in the IR
 
 The grammar of the language can be found in the `parser/README.md` file, which describes the syntax of the language. The semantic analyzer will use this grammar to validate the semantic correctness of the program.
 
@@ -52,12 +52,60 @@ The grammar of the language can be found in the `parser/README.md` file, which d
 
 The IR generator is implemented in the `intermediator` directory. The main components of the IR generator include:
 
-- **IR Node Classes**: Classes that represent different types of IR nodes, such as expressions, statements, and control flow constructs.
-- **IR Generator**: The main class that traverses the AST and generates the intermediate representation.
-- **Visitor Pattern**: The IR generator uses the visitor pattern to traverse the AST and generate the corresponding IR nodes.
-- **Error Handling**: The IR generator provides meaningful error messages when semantic errors are detected.
+-   **IR Instruction Classes**: Classes that represent different types of IR instructions
+-   **IR Generator**: The main class that traverses the AST and generates the intermediate representation
+-   **Visitor Pattern**: The IR generator uses the visitor pattern to traverse the AST and generate the corresponding IR instructions
+-   **Error Handling**: The IR generator provides meaningful error messages when unhandled AST node types are encountered
+
+#### IR Instruction Set
+
+The intermediator supports the following IR instruction types:
+
+-   **LabelInstr**: Represents labels for control flow (e.g., `main:`, `L1:`)
+-   **AssignInstr**: Variable assignments (e.g., `x = 5`, `t1 = y`)
+-   **BinaryOpInstr**: Binary operations (e.g., `t1 = x + y`, `t2 = a == b`)
+-   **JumpInstr**: Unconditional jumps (e.g., `goto L1`)
+-   **ConditionalJumpInstr**: Conditional jumps (e.g., `if_false t1 goto L2`)
+-   **ReturnInstr**: Function returns (e.g., `return x`, `return 0`)
+-   **PrintInstr**: Print statements (e.g., `print x`, `print "hello"`)
+
+#### Supported Language Features
+
+The IR generator handles the following AST node types:
+
+-   **Program and Function declarations**: Multiple functions with proper labeling
+-   **Variable declarations**: With optional initialization expressions
+-   **Variable assignments**: Simple assignments and complex expressions
+-   **Binary operations**: Arithmetic (+, -, \*, /) and comparison (==, !=, <, <=, >, >=) operators
+-   **Conditional statements**: if and if-else constructs with proper control flow
+-   **While loops**: Loop constructs with condition checking and proper jumps
+-   **Print statements**: Support for printing variables, constants, and string literals
+-   **Block statements**: Proper handling of statement blocks
+-   **Constants and identifiers**: Basic value and variable references
+-   **Function calls**: Support for function calls, but no parameters and no return values
+
+#### Technical Details
+
+-   **Temporary Variables**: Generated using pattern `t1`, `t2`, etc. for intermediate results
+-   **Label Generation**: Automatic label creation using pattern `L1`, `L2`, etc. for control flow
+-   **Three-Address Code**: IR follows three-address code principles for easy translation to assembly
+-   **Control Flow**: Proper handling of conditional jumps and unconditional jumps for if-else and while constructs
+
+## Usage
+
+To use the IR generator, you need to:
+
+1. Parse your source code to get an AST (using the parser module)
+2. Optionally run semantic analysis (using the semanter module)
+3. Generate IR from the AST
+
+## Limitations and Known Issues
+
+-   **For Loops**: The language grammar does not support for loops, only while loops are implemented.
+-   **Function Parameters**: Functions cannot accept parameters in this simplified C variant.
+-   **Arrays and Pointers**: No support for array or pointer operations.
+-   **Type System**: Only `int` type is supported.
 
 ## References
 
-- S. GeeksforGeeks, "Intermediate Code Generation in Compiler Design" [Online]. Available: https://www.geeksforgeeks.org/intermediate-code-generation-in-compiler-design/. [Accessed: 01-Jun-2025].
-
+-   S. GeeksforGeeks, "Intermediate Code Generation in Compiler Design" [Online]. Available: https://www.geeksforgeeks.org/intermediate-code-generation-in-compiler-design/. [Accessed: 01-Jun-2025].

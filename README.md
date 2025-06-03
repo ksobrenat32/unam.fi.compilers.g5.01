@@ -15,6 +15,9 @@ Here are the links for each project README.md
 
 - [Lexer](./lexer/README.md)
 - [Parser](./parser/README.md)
+- [Semantic Analyzer](./semanter/README.md)
+- [Intermediate Code Generator](./intermediator/README.md)
+- [Assembly Code Generator](./generator/README.md)
 
 #### How to run
 
@@ -29,7 +32,6 @@ Where `<source_file>` is the path to the source file you want to compile and `<o
 ## Tests
 
 You can run tests for all the elements running:
-
 ```bash
 $ python -m unittest discover -s tests
 ```
