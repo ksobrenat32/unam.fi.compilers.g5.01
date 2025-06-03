@@ -46,6 +46,12 @@ class ReturnInstr(IRInstruction):
     def __str__(self):
         return f"  return {self.value}"
 
+class FunctionCallInstr(IRInstruction):
+    def __init__(self,function_name):
+        self.function_name = function_name
+    def __str__(self):
+        return f"  call {self.function_name}"
+
 class PrintInstr(IRInstruction):
     def __init__(self, value):
         self.value = value
@@ -159,6 +165,10 @@ class IRGenerator:
     def visit_PrintNode(self, node):
         value_to_print = self._visit(node.expression)
         self._add_instruction(PrintInstr(value_to_print))
+
+    def visit_FunctionCallNode(self, node):
+        function_name_to_call = node.name
+        self._add_instruction(FunctionCallInstr(function_name_to_call))
 
     def visit_IdentifierNode(self, node):
         return node.name
