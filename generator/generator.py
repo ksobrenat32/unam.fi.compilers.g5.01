@@ -123,6 +123,9 @@ class CodeGenerator:
                     else:
                         self._add_asm(f"  mov dword {target_loc}, {source_val_or_loc}")
 
+                elif isinstance(instr, intermediator.FunctionCallInstr):
+                    self._add_asm(f"  call {instr.function_name}")
+
                 elif isinstance(instr, intermediator.BinaryOpInstr):
                     target_loc = self._get_var_location_or_value(instr.target)
                     left_val_or_loc = self._get_var_location_or_value(instr.left)
