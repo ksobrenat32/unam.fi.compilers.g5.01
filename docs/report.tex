@@ -1,11 +1,12 @@
 \documentclass[12pt, letterpaper]{article}
 
+\usepackage[T1]{fontenc}
+\usepackage[numbers,sort&compress]{natbib}
+
 \usepackage[english]{babel} % sets the language and regional settings for english documents
 \usepackage[utf8]{inputenc} % allows the use of utf-8 characters in the document
-\usepackage[T1]{fontenc} % specifies the font encoding
 \usepackage[margin=2cm]{geometry} % sets the page margins
 \usepackage{makeidx} % enables the creation of indexes
-\usepackage{natbib} % provides flexible bibliography support
 \usepackage{url} % allows the use of urls
 \usepackage{enumitem} % customizes the appearance of lists
 \usepackage{listings} % provides syntax highlighting for code listings
@@ -444,23 +445,88 @@ OK
 \end{lstlisting}
 
 This output indicates that all 94 tests passed successfully. The series of dots (\texttt{...................}) represents individual test cases passing.
+
 \section{Results}
 
 We achieved our expected goals, the compiler is able to receive a source code file and then output an executable file which we can run in our personal computers.
 We design many test cases to test the compiler, these test cases are designed to cover all the features of the language, including arithmetic operations, if statements, while loops, and function calls. The compiler is able to handle all of these test cases without any issues.
 
+\subsection*{Example}
 
+Here is an example of a source code file that can be compiled with our compiler:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{1.png}
+    \caption{Example source code}
+    \label{fig:example_source_code}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.9\textheight]{2.png}
+    \caption{Example tokenization}
+    \label{fig:example_tokenization}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{3.png}
+    \caption{Example parse tree}
+    \label{fig:example_parse_tree}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{4.png}
+    \caption{Example abstract syntax tree}
+    \label{fig:example_abstract_syntax_tree}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{6.png}
+    \caption{Example output}
+    \label{fig:example_output}
+\end{figure}
+
+In this example, we can see how the compiler is able to tokenize \ref{fig:example_tokenization} the source code \ref{fig:example_source_code}, parse it into a parse tree \ref{fig:example_parse_tree}, and then generate an abstract syntax tree \ref{fig:example_abstract_syntax_tree}. Finally, the compiler is able to generate an executable file that can be run on our personal computers \ref{fig:example_output}.
 
 \section{Conclusions}
 
-In conclusion, this project was successfully completed, and we had a better approach of how modern compilers work, which complex processes a
+The successful development of this compiler, as evidenced by its ability to process source code through all compilation stages and generate a functional executable, underscores the practical value of the theoretical concepts explored. The results, particularly the compiler's correct handling of various test cases encompassing arithmetic operations, conditional statements, loops, and function calls, demonstrate a tangible outcome of applying established compiler design principles.
+
+This project effectively bridged the gap between theory and practice. The foundational theories of formal languages were crucial for implementing the lexical analyzer with regular expressions. Similarly, context-free grammars and parsing techniques like recursive descent were instrumental in constructing the syntax analyzer and generating Abstract Syntax Trees. The systematic application of semantic analysis rules, facilitated by symbol tables and the Visitor pattern, ensured the logical correctness of the code. Furthermore, the translation to Three-Address Code and subsequent generation of x86 assembly code relied heavily on understanding intermediate representations and target machine architecture.
+
+The constraints imposed on the language design, while simplifying implementation, did not detract from the core learning objective: to understand and apply the multi-phase compilation pipeline. Each phase, from tokenization to code generation, presented unique challenges that were addressed by drawing upon specific theoretical knowledge. The development process highlighted how these distinct theoretical components integrate to form a cohesive system capable of translating high-level human-readable code into machine-executable instructions. This experience provides a solid understanding of the complexities inherent in compiler construction and the critical role of a strong theoretical framework in navigating these complexities to achieve a working solution.
+
+
 \section{References}
 
-% \begin{biblioment, we will set our own objectives to guide the development of the compiler.}
-% 	%for: https://www.poli.edu.co/blog/poliverso/diseno-digital-que-es
-% 	\item \textit{diseño digital: qué es y por qué es importante.} (2021, august 26). poliverso. retrieved october 16, 2024, from: \textcolor{blue}{\underline{\url{https://www.poli.edu.co/blog/poliverso/diseno-digital-que-es}}}
-% 	%for: https://www.sky6cancun.com/marketing/diseno-grafico/diseno-digital-que-es-y-para-que-sirve/
-% 	\item \textit{diseño digital: qué es y para qué sirve.} (2021, august 26). sky6cancún. retrieved october 16, 2024, from: \textcolor{blue}{\underline{\url{https://www.sky6cancun.com/marketing/diseno-grafico/}}}
-% \end{biblio}
+\begin{thebibliography}{9}
+
+\bibitem{GGF_ParsersTypes}
+S. GeeksforGeeks, "Types of Parsers in Compiler Design," \emph{GeeksforGeeks}. [Online]. Available: \url{https://www.geeksforgeeks.org/types-of-parsers-in-compiler-design/}. [Accessed: May 27, 2025].
+
+\bibitem{GGF_LR0Problem}
+S. GeeksforGeeks, "Problem on LR(0) Parser," \emph{GeeksforGeeks}. [Online]. Available: \url{https://www.geeksforgeeks.org/problem-on-lr0-parser/}. [Accessed: May 27, 2025].
+
+\bibitem{GGF_SemanticAnalysis}
+S. GeeksforGeeks, "Semantic Analysis in Compiler Design," \emph{GeeksforGeeks}. [Online]. Available: \url{https://www.geeksforgeeks.org/semantic-analysis-in-compiler-design/}. [Accessed: May 28, 2025].
+
+\bibitem{Pgrandinetti_SemanticDesign}
+S. Pgrandinetti, "How to Design Semantic Analysis," \emph{Pgrandinetti GitHub Pages}. [Online]. Available: \url{https://pgrandinetti.github.io/compilers/page/how-to-design-semantic-analysis/}. [Accessed: May 28, 2025].
+
+\bibitem{Tutorialspoint_SemanticCompiler}
+S. Tutorialspoint, "Compiler Design Semantic Analysis," \emph{Tutorialspoint}. [Online]. Available: \url{https://www.tutorialspoint.com/compiler_design/compiler_design_semantic_analysis.htm}. [Accessed: May 28, 2025].
+
+\bibitem{GGF_IntermediateCodeGen}
+S. GeeksforGeeks, "Intermediate Code Generation in Compiler Design," \emph{GeeksforGeeks}. [Online]. Available: \url{https://www.geeksforgeeks.org/intermediate-code-generation-in-compiler-design/}. [Accessed: Jun. 1, 2025].
+
+\bibitem{GGF_CodeGeneratorIssues}
+S. GeeksforGeeks, "Issues in the design of a code generator," \emph{GeeksforGeeks}. [Online]. Available: \url{https://www.geeksforgeeks.org/issues-in-the-design-of-a-code-generator/}. [Accessed: Jun. 1, 2025].
+
+\end{thebibliography}
 
 \end{document}
