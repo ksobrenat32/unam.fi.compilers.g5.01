@@ -1,5 +1,7 @@
 # Compilers Subject
 
+[![PDF Report](https://img.shields.io/badge/Report-PDF-blue)](./docs/report.pdf)
+
 This is the repository for the Compilers subject. The objective is to develop a compiler from scratch, using concepts learned on the subject.
 
 We are group 5, team 01.
@@ -8,6 +10,8 @@ We are group 5, team 01.
 - Luis Salazar
 - Luis Ugartechea
 - Hansel Tepal
+
+You can find the full PDF report of the project in the `docs` folder, which contains all the details of the implementation, design decisions, and other relevant information.
 
 ## Tasks
 
