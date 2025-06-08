@@ -36,7 +36,6 @@ We can remember that this C based programming language is a simplified version o
 - Functions don't accept parameters
 - No loops for are defined
 - No array or pointer support
-- No function calls in expressions
 
 #### Context-Free Grammar
 
@@ -79,8 +78,7 @@ $ python -m unittest discover -s tests
 If the output is `OK`, then all tests have passed successfully.
 
 ## Conclusions
-
-The parser has been successfully implemented and tested against a set of predefined test cases. It correctly validates the syntax of the C based programming language and builds an abstract syntax tree (AST) that represents the structure of the program. The parser also provides meaningful error messages when the syntax is incorrect, aiding in debugging and development.
+w
 
 ## References
 
